@@ -1,0 +1,318 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "id" : "1943EA22591E28D4",
+  "config" : {
+    "data" : "com.axonivy.utils.gdpr.DataDeletionData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "startDataDeletion.ivp",
+      "config" : {
+        "signature" : "startDataDeletion",
+        "request" : {
+          "name" : "<%=ivy.cms.co(\"/Processes/DataDeletion/name\")%>",
+          "description" : "<%=ivy.cms.co(\"/Processes/DataDeletion/description\")%>",
+          "category" : "dataDeletion"
+        },
+        "permission" : {
+          "anonymous" : false,
+          "roles" : [
+            "GDPRAdministrator"
+          ]
+        }
+      },
+      "tags" : [
+        "utils"
+      ],
+      "visual" : {
+        "at" : { "x" : 144, "y" : 208 }
+      },
+      "connect" : [
+        { "id" : "f13", "to" : "f11" }
+      ]
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 840, "y" : 208 }
+      }
+    }, {
+      "id" : "f11",
+      "type" : "Alternative",
+      "visual" : {
+        "at" : { "x" : 296, "y" : 208 }
+      },
+      "connect" : [
+        { "id" : "f15", "to" : "f7" }
+      ]
+    }, {
+      "id" : "S10",
+      "type" : "UserBpmnElement",
+      "name" : "Data Deletion task",
+      "elements" : [ {
+          "id" : "S10-f6",
+          "type" : "Script",
+          "name" : "Init data",
+          "config" : {
+            "output" : {
+              "code" : [
+                "import com.axonivy.utils.gdpr.utils.DataDeletionUtils;",
+                "import com.axonivy.utils.gdpr.persistence.service.FinancialDataDeletionService;",
+                "import com.axonivy.utils.gdpr.enums.CustomField;",
+                "import com.axonivy.utils.gdpr.persistence.entities.FinancialDataDeletion;",
+                "import com.axonivy.utils.gdpr.service.IvyService;",
+                "",
+                "in.task = DataDeletionUtils.genrateTaskInformation();",
+                "ivy.case.name = DataDeletionUtils.generateCaseName();",
+                "ivy.case.description = IvyService.getCMSMacros(\"/Processes/DataDeletion/Cases/GeneralDataProtectionRegulation/description\");",
+                "ivy.case.setCategoryPath(DataDeletionUtils.CATEGORY_PATH);",
+                "FinancialDataDeletion financialDataDeletion = new FinancialDataDeletion();",
+                "financialDataDeletion.setCaseId(ivy.case.uuid());",
+                "in.financialDataDeletionId = FinancialDataDeletionService.getInstance().save(financialDataDeletion);",
+                "ivy.case.customFields().stringField(CustomField.ENTITY_ID.getFieldName()).set(in.financialDataDeletionId);",
+                "String businessCaseDetailsUrl = DataDeletionUtils.getDataDeleteionCaseDetailUrl(in.financialDataDeletionId);",
+                "ivy.case.customFields().textField(CustomField.CUSTOMIZATION_ADDITIONAL_CASE_DETAILS_PAGE.getFieldName()).set(businessCaseDetailsUrl);"
+              ]
+            },
+            "sudo" : true
+          },
+          "visual" : {
+            "at" : { "x" : 232, "y" : 160 }
+          },
+          "connect" : [
+            { "id" : "S10-f7", "to" : "S10-f4" }
+          ]
+        }, {
+          "id" : "S10-f4",
+          "type" : "TaskSwitchEvent",
+          "name" : "Financial Data Deletion task",
+          "config" : {
+            "task" : {
+              "name" : "<%=in1.task.taskName%>",
+              "description" : "<%=in1.task.taskDescription%>",
+              "category" : "<%=in1.task.category%>",
+              "responsible" : {
+                "type" : "ROLE_FROM_ATTRIBUTE",
+                "script" : "in1.task.taskRole"
+              },
+              "priority" : {
+                "level" : "SCRIPT",
+                "script" : "in1.task.taskPriority.ordinal()"
+              }
+            }
+          },
+          "visual" : {
+            "at" : { "x" : 384, "y" : 160 },
+            "labelOffset" : { "x" : 14, "y" : 34 }
+          },
+          "connect" : [
+            { "id" : "S10-f10", "to" : "S10-f2" }
+          ]
+        }, {
+          "id" : "S10-f2",
+          "type" : "DialogCall",
+          "name" : "Financial Data Deletion",
+          "config" : {
+            "dialog" : "com.axonivy.utils.gdpr.GeneralDataProtectionRegulation:start(String)",
+            "call" : {
+              "map" : {
+                "param.financialDataDeletionId" : "in.financialDataDeletionId"
+              }
+            }
+          },
+          "visual" : {
+            "at" : { "x" : 548, "y" : 160 },
+            "size" : { "width" : 136, "height" : 62 }
+          },
+          "connect" : [
+            { "id" : "S10-f1", "to" : "S10-g1" }
+          ]
+        }, {
+          "id" : "S10-g0",
+          "type" : "EmbeddedStart",
+          "name" : "in 1",
+          "visual" : {
+            "at" : { "x" : 96, "y" : 160 }
+          },
+          "parentConnector" : "f5",
+          "connect" : [
+            { "id" : "S10-f0", "to" : "S10-f6" }
+          ]
+        }, {
+          "id" : "S10-g1",
+          "type" : "EmbeddedEnd",
+          "name" : "out 1",
+          "visual" : {
+            "at" : { "x" : 688, "y" : 160 }
+          },
+          "parentConnector" : "f14"
+        } ],
+      "visual" : {
+        "at" : { "x" : 636, "y" : 208 },
+        "size" : { "width" : 152, "height" : 62 }
+      },
+      "connect" : [
+        { "id" : "f14", "to" : "f1" }
+      ]
+    }, {
+      "id" : "f7",
+      "type" : "Alternative",
+      "name" : "should create new case?",
+      "config" : {
+        "conditions" : {
+          "f5" : "com.axonivy.utils.gdpr.service.DataDeletionService.getInstance().shouldCreateNewCase()"
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 448, "y" : 208 },
+        "labelOffset" : { "y" : -16 }
+      },
+      "connect" : [
+        { "id" : "f5", "to" : "S10", "label" : {
+            "name" : "yes",
+            "offset" : { "x" : 1, "y" : 6 }
+          } },
+        { "id" : "f9", "to" : "f1", "via" : [ { "x" : 448, "y" : 336 }, { "x" : 840, "y" : 336 } ], "label" : {
+            "name" : "no"
+          } }
+      ]
+    }, {
+      "id" : "f3",
+      "type" : "ProgramStart",
+      "name" : "Trigger",
+      "config" : {
+        "javaClass" : "ch.ivyteam.ivy.process.eventstart.beans.TimerBean",
+        "userConfig" : {
+          "time" : "ivy.var.gdpr_DataDeletionCronJobPattern"
+        },
+        "link" : "eventLink.ivp"
+      },
+      "visual" : {
+        "at" : { "x" : 296, "y" : 320 }
+      },
+      "connect" : [
+        { "id" : "f4", "to" : "f11" }
+      ]
+    }, {
+      "id" : "f6",
+      "type" : "RequestStart",
+      "name" : "businessCaseDetails",
+      "config" : {
+        "signature" : "businessCaseDetails",
+        "input" : {
+          "params" : [
+            { "name" : "id", "type" : "String", "desc" : "" }
+          ],
+          "map" : {
+            "out.financialDataDeletionId" : "param.id"
+          }
+        },
+        "request" : {
+          "isVisibleOnStartList" : false
+        }
+      },
+      "tags" : [
+        "utils"
+      ],
+      "visual" : {
+        "at" : { "x" : 144, "y" : 592 }
+      },
+      "connect" : [
+        { "id" : "f12", "to" : "f2" }
+      ]
+    }, {
+      "id" : "f8",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 448, "y" : 592 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f2",
+      "type" : "DialogCall",
+      "name" : "View Details page",
+      "config" : {
+        "dialog" : "com.axonivy.utils.gdpr.GeneralDataProtectionBusinessCaseDetails:start(String)",
+        "call" : {
+          "map" : {
+            "param.financialDataDeletionId" : "in.financialDataDeletionId"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 296, "y" : 593 },
+        "size" : { "width" : 152, "height" : 62 }
+      },
+      "connect" : [
+        { "id" : "f10", "to" : "f8", "color" : "default" }
+      ]
+    }, {
+      "id" : "f16",
+      "type" : "RequestStart",
+      "name" : "startSummaryPage",
+      "config" : {
+        "signature" : "startSummaryPage",
+        "request" : {
+          "name" : "<%=ivy.cms.co(\"/Processes/DataDeletionSummary/name\")%>",
+          "description" : "<%=ivy.cms.co(\"/Processes/DataDeletionSummary/description\")%>"
+        },
+        "permission" : {
+          "anonymous" : false,
+          "roles" : [
+            "GDPRAdministrator"
+          ]
+        }
+      },
+      "tags" : [
+        "utils"
+      ],
+      "visual" : {
+        "at" : { "x" : 144, "y" : 464 }
+      },
+      "connect" : [
+        { "id" : "f18", "to" : "f19" }
+      ]
+    }, {
+      "id" : "f17",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 448, "y" : 464 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f19",
+      "type" : "DialogCall",
+      "name" : "Summary page",
+      "config" : {
+        "dialog" : "com.axonivy.utils.gdpr.GeneralDataProtectionSummary:start()"
+      },
+      "visual" : {
+        "at" : { "x" : 296, "y" : 465 },
+        "size" : { "width" : 144, "height" : 62 }
+      },
+      "connect" : [
+        { "id" : "f20", "to" : "f17", "color" : "default" }
+      ]
+    } ],
+  "layout" : {
+    "lanes" : [ {
+        "name" : "General Data Protection Regulation",
+        "offset" : 128,
+        "size" : 552,
+        "lanes" : [ {
+            "name" : "Data Deletion",
+            "size" : 248,
+            "color" : "color1"
+          }, {
+            "name" : "Business View",
+            "size" : 304,
+            "color" : "color2"
+          } ]
+      } ],
+    "colors" : {
+      "color1" : "#b3ffb4",
+      "color2" : "#8ef4fb"
+    }
+  }
+}

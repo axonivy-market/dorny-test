@@ -1,0 +1,277 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "id" : "1948C6200884AE99",
+  "config" : {
+    "data" : "com.axonivy.utils.gdpr.demo.DemoGeneralDataProtectionRegulationData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "startCreateDummyData",
+      "config" : {
+        "signature" : "startCreateDummyData",
+        "request" : {
+          "name" : "<%=ivy.cms.co(\"/Processes/CreateDummyData/name\")%>"
+        }
+      },
+      "tags" : [
+        "demo"
+      ],
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : [
+        { "id" : "f2", "to" : "f8" }
+      ]
+    }, {
+      "id" : "f1",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 352, "y" : 64 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "SignalStartEvent",
+      "name" : "demo:dummy:case:string",
+      "config" : {
+        "signalCode" : "demo:dummy:case:string",
+        "attachToBusinessCase" : false,
+        "output" : {
+          "map" : { },
+          "code" : [
+            "String input = signal.getSignalData().toString();",
+            "ivy.case.name = ivy.cms.co(\"/Processes/CreateDummyData/Cases/CustomStringField/name\", [input]);"
+          ]
+        }
+      },
+      "tags" : [
+        "demo"
+      ],
+      "visual" : {
+        "at" : { "x" : 96, "y" : 200 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : [
+        { "id" : "f5", "to" : "f10" }
+      ]
+    }, {
+      "id" : "f4",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 672, "y" : 200 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f8",
+      "type" : "Script",
+      "name" : "Trigger cases",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import ch.ivyteam.ivy.process.model.value.SignalCode;",
+            "for (int i =0; i < 2; i++) {",
+            "  ivy.wf.signals().create().data(i).send(SignalCode.of(\"demo:dummy:case:string\"));",
+            "  ivy.wf.signals().create().data(i).send(SignalCode.of(\"demo:dummy:case:int\"));",
+            "}"
+          ]
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 64 }
+      },
+      "connect" : [
+        { "id" : "f9", "to" : "f1", "color" : "default" }
+      ]
+    }, {
+      "id" : "f10",
+      "type" : "Script",
+      "name" : "Init case",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.gdpr.demo.enums.CustomField;",
+            "import com.axonivy.utils.gdpr.demo.service.DemoService;",
+            "ivy.case.customFields().stringField(CustomField.ENTITY_ID.getFieldName()).set(DemoService.createUserTestData());",
+            "ivy.case.customFields().stringField(CustomField.LEGAL_ENTITY.getFieldName()).set(CustomField.RDE.getFieldName());"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 200 }
+      },
+      "connect" : [
+        { "id" : "f11", "to" : "f15", "color" : "default", "var" : "in1" }
+      ]
+    }, {
+      "id" : "f12",
+      "type" : "SignalStartEvent",
+      "name" : "demo:dummy:case:int",
+      "config" : {
+        "signalCode" : "demo:dummy:case:int",
+        "attachToBusinessCase" : false,
+        "output" : {
+          "map" : { },
+          "code" : [
+            "String input = signal.getSignalData().toString();",
+            "ivy.case.name = ivy.cms.co(\"/Processes/CreateDummyData/Cases/CustomNumberField/name\", [input]);"
+          ]
+        }
+      },
+      "tags" : [
+        "demo"
+      ],
+      "visual" : {
+        "at" : { "x" : 96, "y" : 368 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      },
+      "connect" : [
+        { "id" : "f18", "to" : "f13" }
+      ]
+    }, {
+      "id" : "f13",
+      "type" : "Script",
+      "name" : "Init case",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.gdpr.demo.enums.CustomField;",
+            "import com.axonivy.utils.gdpr.demo.service.DemoService;",
+            "ivy.case.customFields().numberField(CustomField.ENTITY_ID.getFieldName()).set(DemoService.createClassTestData());",
+            "ivy.case.customFields().stringField(CustomField.LEGAL_ENTITY.getFieldName()).set(CustomField.RDE.getFieldName());"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 224, "y" : 368 }
+      },
+      "connect" : [
+        { "id" : "f14", "to" : "f17", "var" : "in1" }
+      ]
+    }, {
+      "id" : "f19",
+      "type" : "TaskSwitchGateway",
+      "config" : {
+        "tasks" : [ {
+            "id" : "TaskB",
+            "name" : "<%=ivy.cms.co(\"/Processes/CreateDummyData/Tasks/DummyStringTask/name\")%>"
+          }, {
+            "id" : "TaskA",
+            "name" : "<%=ivy.cms.co(\"/Processes/CreateDummyData/Tasks/DummyStringTask/name\")%>"
+          } ]
+      },
+      "visual" : {
+        "at" : { "x" : 448, "y" : 200 },
+        "labelOffset" : { "x" : 14, "y" : 34 }
+      },
+      "connect" : [
+        { "id" : "f22", "to" : "f21", "via" : [ { "x" : 448, "y" : 272 } ], "condition" : "ivp==\"TaskB.ivp\"" },
+        { "id" : "f6", "to" : "f4", "condition" : "ivp==\"TaskA.ivp\"" }
+      ]
+    }, {
+      "id" : "f21",
+      "type" : "Script",
+      "name" : "Dummy script",
+      "config" : {
+        "output" : {
+          "code" : "ivy.task.activator = ivy.session.getSessionUser();"
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 560, "y" : 272 }
+      },
+      "connect" : [
+        { "id" : "f23", "to" : "f4", "via" : [ { "x" : 672, "y" : 272 } ] }
+      ]
+    }, {
+      "id" : "f7",
+      "type" : "TaskSwitchGateway",
+      "config" : {
+        "tasks" : [ {
+            "id" : "TaskB",
+            "name" : "<%=ivy.cms.co(\"/Processes/CreateDummyData/Tasks/DummyNumberTask/name\")%>"
+          }, {
+            "id" : "TaskA",
+            "name" : "<%=ivy.cms.co(\"/Processes/CreateDummyData/Tasks/DummyNumberTask/name\")%>"
+          } ]
+      },
+      "visual" : {
+        "at" : { "x" : 448, "y" : 368 },
+        "labelOffset" : { "x" : 14, "y" : 34 }
+      },
+      "connect" : [
+        { "id" : "f25", "to" : "f24", "via" : [ { "x" : 448, "y" : 440 } ], "condition" : "ivp==\"TaskB.ivp\"" },
+        { "id" : "f27", "to" : "f20", "condition" : "ivp==\"TaskA.ivp\"" }
+      ]
+    }, {
+      "id" : "f20",
+      "type" : "TaskEnd",
+      "visual" : {
+        "at" : { "x" : 672, "y" : 368 },
+        "labelOffset" : { "x" : 13, "y" : 33 }
+      }
+    }, {
+      "id" : "f24",
+      "type" : "Script",
+      "name" : "Dummy script",
+      "config" : {
+        "output" : {
+          "code" : "ivy.task.activator = ivy.session.getSessionUser();"
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 560, "y" : 440 }
+      },
+      "connect" : [
+        { "id" : "f26", "to" : "f20", "via" : [ { "x" : 672, "y" : 440 } ] }
+      ]
+    }, {
+      "id" : "f15",
+      "type" : "TaskSwitchEvent",
+      "name" : "System task",
+      "config" : {
+        "task" : {
+          "name" : "Create new data",
+          "responsible" : {
+            "roles" : [
+              "SYSTEM"
+            ]
+          },
+          "skipTasklist" : true
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 352, "y" : 200 },
+        "labelOffset" : { "x" : 14, "y" : 34 }
+      },
+      "connect" : [
+        { "id" : "f16", "to" : "f19", "color" : "default", "var" : "in1" }
+      ]
+    }, {
+      "id" : "f17",
+      "type" : "TaskSwitchEvent",
+      "name" : "System task",
+      "config" : {
+        "task" : {
+          "name" : "Create new data",
+          "responsible" : {
+            "roles" : [
+              "SYSTEM"
+            ]
+          },
+          "skipTasklist" : true
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 352, "y" : 368 },
+        "labelOffset" : { "x" : 14, "y" : 34 }
+      },
+      "connect" : [
+        { "id" : "f28", "to" : "f7", "color" : "default", "var" : "in1" }
+      ]
+    } ]
+}

@@ -1,0 +1,69 @@
+Categories:
+  dataDeletion:
+    name: Data Protection
+Dialogs:
+  com:
+    axonivy:
+      utils:
+        gdpr:
+          ConfirmDeleteDataMessage: Click delete to confirm data deletion.
+          DataDeletionCompletedHelpText: User data deleted from {0} tasks in {1} cases due to General Data Protection Regulation requirements. Please see details in the Case Details - Business Details of this case
+          DataDeletionIsCompleted: <b>Click finish to complete the data deletion task.</b>
+          DataDeletionResult: Results of GDPR Data deletion
+          DataDeletionStatus: Data Deletion status
+          DeletedCaseNoteMessage: User data deleted from tasks {0} due to German data deletion requirements
+          DeletingHelpText: The data from the following period will be deleted.
+          DeletionResult:
+            NumberOfCasesProsessed: Number of cases processed
+            NumberOfTasksProcessed: Number of tasks processed
+          DeletionWarningNote: Once you press the submit button, there is no going back, the data will be irrevocably deleted. Please be certain.
+          FinancialRange: From {0} to {1}
+          GeneralDataProtectionRegulationView:
+            CaseNumber: Case Number
+            TaskNumber: Task Number
+          HelpText: The annual data deletion is required in accordance with the GDPR regulations, check the rule <a href="https://www.dlapiperdataprotection.com" target="_blank">here</a>
+          PleaseDoNotCloseTask: Please do not close this task while data is still being processed.
+          PleaseSelectFinancialYear: Please select Financial Year
+          ProcessStatusMessage:
+            CheckAndDeleteEntities: Checking and deleting entities
+            DataDeleted: Data deleted
+            DeletedEntitiesInDB: Deleted [{0}] entities in Database
+            DeletingEntity: Deleting {0} {1}
+            DestroyedCase: Destroyed case [{0}] {1}
+            FindingCasesOfFinancialYear: Finding all cases of financial year {0} from {1} to {2}
+            Finished: Finished
+            NoDataToDelete: No data to delete
+            StartProcess: Start process
+          StartDeletingData: Start deleting data
+Labels:
+  Close: Close
+  Confirmation: Confirmation
+  ConfirmationHeaderText: Are you sure?
+  DatePattern: dd/MM/yyyy
+  Delete: Delete
+  Finish: Finish
+  NoRecordsFound: No records found.
+  Result: Result
+  Submit: Submit
+  TimePeriod: Time Period
+  Warning: WARNING
+Processes:
+  DataDeletion:
+    Cases:
+      GeneralDataProtectionRegulation:
+        description: Deletes user data for GDPR purposes
+        name: General Data Protection Regulation process for {0}
+      GeneralDataProtectionSummary:
+        name: General Data Protection Summary
+    Tasks:
+      GeneralDataProtectionRegulation:
+        description: Allows the user to determine dates in which user data must be deleted and deletes it.
+        name: General Data Protection Regulation task
+    description: Automated process that starts automatically once a year and creates a user task. The user can then determine the dates for which data should be deleted. The data is then deleted by an automatic function.
+    name: Manual trigger the General Data Protection Regulation process
+  DataDeletionSummary:
+    Cases:
+      GeneralDataProtectionSummary:
+        name: General Data Protection Summary
+    description: View all deleted data of the General Data Protection Regulation rule
+    name: Data deletion summary

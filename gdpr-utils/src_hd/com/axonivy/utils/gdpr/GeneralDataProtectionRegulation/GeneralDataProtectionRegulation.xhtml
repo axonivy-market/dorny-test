@@ -1,0 +1,181 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:ic="http://ivyteam.ch/jsf/component"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:body>
+	<ui:composition template="/layouts/frame-10.xhtml">
+		<ui:define name="title">#{ivy.task.name}</ui:define>
+		<ui:define name="content">
+			<h:outputStylesheet name="/layouts/styles/core.css"/>
+			<h:form id="deletion-form" styleClass="grid deletion-form">
+				<p:growl id="growl-message" showDetail="true" sticky="true"
+					for="growl-message">
+					<p:autoUpdate />
+				</p:growl>
+				<div class="card col-12">
+					<h3 class="field col-12">
+						<h:outputText value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/HelpText')}" escape="false"/>
+					</h3>
+					<div class="col-12">
+						<p:fieldset legend="#{ivy.cms.co('/Labels/TimePeriod')}">
+							<div class="formgrid grid align-items-start ui-fluid">
+								<h4 class="field col-12">#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/DeletingHelpText')}</h4>
+								<p:outputLabel for="financial-year"
+									value="Please select Financial Year"
+									styleClass="field p-text-left md:text-right col-12 md:col-3 mt-2" />
+								<div class="field col-12 md:col-6">
+									<p:selectCheckboxMenu id="financial-year"
+										required="#{!financialDataDeletionBean.contentState.readOnly}styles/core.cssstyles/core.css"
+										value="#{financialDataDeletionBean.selectedFinancialYears}"
+										multiple="true" dynamic="true" widgetVar="financial-year"
+										converter="pojoConverter" filter="true"
+										requiredMessage="This field is required"
+										disabled="#{financialDataDeletionBean.contentState.selectFinancialYearReadOnly}">
+										<p:ajax update="financial-year-info" global="false"
+											partialSubmit="true" process="@this" />
+										<p:ajax event="toggleSelect" update="financial-year-info"
+											global="false" partialSubmit="true" process="@this" />
+										<p:ajax event="itemUnselect" update="financial-year-info"
+											global="false" partialSubmit="true" process="@this" />
+										<f:selectItems
+											rendered="#{!financialDataDeletionBean.contentState.selectFinancialYearReadOnly}"
+											value="#{financialDataDeletionBean.financialYears}"
+											var="finYear" itemValue="#{finYear}"
+											itemLabel="#{finYear.name}"
+											itemDisabled="#{finYear.isProcessed}" />
+									</p:selectCheckboxMenu>
+
+									<p:message for="financial-year" />
+								</div>
+								<div class="col-12 md:col-3" />
+								<div class="col-12 md:col-3" />
+								<h:panelGroup id="financial-year-info"
+									styleClass="field col-12 md:col-8 p-text-left">
+									<div class="col-12">
+										<ui:repeat var="seletedFY"
+											value="#{financialDataDeletionBean.selectedFinancialYears}">
+											<li><h:outputText
+													value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/FinancialRange', [seletedFY.startFY, seletedFY.endFY])}" />
+											</li>
+										</ui:repeat>
+									</div>
+								</h:panelGroup>
+							</div>
+						</p:fieldset>
+					</div>
+					<div class="col-12 pt-0">
+						<p:staticMessage severity="warn" summary="#{ivy.cms.co('/Labels/Warning')}" detail="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/DeletionWarningNote')}" escape="false"/>
+					</div>
+					<h:panelGroup layout="block" styleClass="col-12"
+						rendered="#{financialDataDeletionBean.contentState.deletionStatusVisible}">
+						<p:fieldset
+							legend="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/DataDeletionStatus')}"
+							toggleable="true">
+							<div class="formgrid grid align-items-baseline ui-fluid">
+								<p:poll id="refresh-data-poll" interval="3"
+									stop="#{financialDataDeletionBean.stopPollMessage()}"
+									update="processing-message-group data-deleting-message-group deletion-form:command-btns-group deletion-form"
+									oncomplete="scrollToBottom();" global="false"
+									partialSubmit="true" process="@this" />
+								<h:panelGroup id="processing-message-group"
+									styleClass="field col-12">
+									<h:outputText
+										rendered="#{financialDataDeletionBean.contentState.inProgressMessageVisible}"
+										value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/PleaseDoNotCloseTask')}" />
+									<h:panelGroup
+										rendered="#{!financialDataDeletionBean.contentState.inProgressMessageVisible}">
+										<div>
+											<h:outputText
+												value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/DataDeletionIsCompleted')}"
+												escape="false" />
+										</div>
+										<h:outputText escape="false"
+											value="#{financialDataDeletionBean.totalRecordsDeletedMessage}" />
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{financialDataDeletionBean.contentState.inProgressMessageVisible}"
+									styleClass="helper-loading field col-12 m-0 pb-0">
+									<i
+										class="si si-synchronize-arrows si-is-spinning si-lg u-mar-right-10" />
+									<span class="ml-1">#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/StartDeletingData')}</span>
+								</h:panelGroup>
+
+								<h:panelGroup id="data-deleting-message-group"
+									rendered="#{not empty financialDataDeletionBean.deletingMessage}"
+									layout="block" styleClass="field col-12 m-0 pt-0">
+									<pre class="data-deleting-message">#{financialDataDeletionBean.deletingMessage}</pre>
+								</h:panelGroup>
+							</div>
+						</p:fieldset>
+					</h:panelGroup>
+				</div>
+				<h:panelGroup id="command-btns-group" layout="block"
+					styleClass="command-btns col-12">
+					<p:remoteCommand name="enableActionButtonsRC"
+						oncomplete="PF('finish-task').enable()" process="@this"
+						update="@this" partialSubmit="true" immediate="true" async="true" />
+					<p:remoteCommand name="deleteData" id="delete-data-rc"
+						actionListener="#{financialDataDeletionBean.deleteData()}"
+						update="deletion-form" process="@this" partialSubmit="true"
+						async="true" global="false" />
+					<p:commandButton id="close" widgetVar="close"
+						styleClass="ui-button-flat"
+						actionListener="#{ivyWorkflowView.cancel()}" process="@this"
+						update="@this" value="#{ivy.cms.co('/Labels/Close')}"
+						rendered="#{financialDataDeletionBean.contentState.closeButtonVisible}" />
+					<p:commandButton id="submit" widgetVar="submit"
+						update="deletion-form" icon="pi pi-check" styleClass="ml-3"
+						oncomplete="if(!args.validationFailed) { PF('confirm-data-deletion-dialog').show(); }"
+						value="#{ivy.cms.co('/Labels/Submit')}"
+						rendered="#{financialDataDeletionBean.contentState.submitButtonVisible}" />
+					<p:commandButton id="finish-task" widgetVar="finish-task"
+						disabled="#{!financialDataDeletionBean.canBeFinishedTask}"
+						value="#{ivy.cms.co('/Labels/Finish')}" update="@this"
+						process="@this" icon="pi pi-arrow-right"
+						actionListener="#{financialDataDeletionBean.finishTask}"
+						styleClass="ml-3"
+						rendered="#{financialDataDeletionBean.contentState.finishButtonVisible}" />
+				</h:panelGroup>
+			</h:form>
+
+			<ui:decorate template="/layouts/decorator/dialog-with-icon.xhtml">
+				<ui:param name="id" value="confirm-data-deletion-dialog" />
+				<ui:param name="widgetVar" value="confirm-data-deletion-dialog" />
+				<ui:param name="appendTo" value="@(body)" />
+				<ui:param name="iconClass" value="si si-road-sign-warning" />
+				<ui:param name="dialogContent"
+					value="#{ivy.cms.co('/Dialogs/com/axonivy/utils/gdpr/ConfirmDeleteDataMessage')}" />
+
+				<ui:define name="dialogFooter">
+					<p:commandLink value="#{ivy.cms.co('/Labels/Close')}"
+						styleClass="mr-3"
+						onclick="PF('confirm-data-deletion-dialog').hide(); return false;" />
+					<p:commandButton id="delete-btn"
+						value="#{ivy.cms.co('/Labels/Delete')}" icon="si si-bin-1"
+						update="@this deletion-form" process="@this" partialSubmit="true"
+						actionListener="#{financialDataDeletionBean.confirmDeleteData()}"
+						oncomplete="PF('confirm-data-deletion-dialog').hide();PF('finish-task').disable();deleteData();" />
+				</ui:define>
+			</ui:decorate>
+
+			<script type="text/javascript">
+				window.isHideTaskName = true;
+				window.isHideTaskAction = true;
+				window.isHideCaseInfo = true;
+				window.isWorkingOnATask = true;
+
+				function scrollToBottom() {
+					let deletingMessage = $('.data-deleting-message');
+					deletingMessage.scrollTop(deletingMessage.prop("scrollHeight"));
+					PF('finish-task').disable();
+				};
+			</script>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

@@ -1,0 +1,30 @@
+/* BEGIN CONFIRM DIALOG */
+.dialog-icon {
+	font-size: 5rem !important;
+}
+
+.dialog-warning-icon {
+	color: var(--warning-color);
+}
+
+/* DATA DELETION */
+.warning-letter {
+	color: var(--error-color);
+	font-weight: bold;
+}
+
+.data-deleting-message {
+	background-color: var(--surface-d);
+	border-radius: 0.5rem;
+	font-size: 85%;
+	max-height: 200px;
+	overflow: auto;
+	padding: 0.5rem;
+	user-select: auto;
+}
+
+.helper-loading {
+	display: inline-flex;
+	align-items: center;
+	flex-direction: row;
+}

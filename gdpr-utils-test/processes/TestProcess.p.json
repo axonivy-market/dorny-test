@@ -1,0 +1,118 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/process/13.1.2/process.json",
+  "id" : "194EF1C2639450F0",
+  "config" : {
+    "data" : "com.axonivy.utils.gdpr.test.TestProcessData"
+  },
+  "elements" : [ {
+      "id" : "f0",
+      "type" : "RequestStart",
+      "name" : "start",
+      "config" : {
+        "signature" : "start"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 64 }
+      },
+      "connect" : [
+        { "id" : "f2", "to" : "f1" }
+      ]
+    }, {
+      "id" : "f1",
+      "type" : "Script",
+      "name" : "Start task",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import ch.ivyteam.ivy.request.IHttpResponse;",
+            "import ch.ivyteam.ivy.workflow.TaskState;",
+            "import ch.ivyteam.ivy.workflow.query.TaskQuery;",
+            "import ch.ivyteam.ivy.workflow.ITask;",
+            "ITask dataDeletionTask = TaskQuery.create().where().name().isLike(\"General Data Protection Regulation task\").and().state().isNotIn(TaskState.DONE, TaskState.DESTROYED).executor().firstResult() as ITask;",
+            "if (dataDeletionTask != null && TaskState.SUSPENDED != dataDeletionTask.getState()) {",
+            "  dataDeletionTask.reset();",
+            "}",
+            "",
+            "IHttpResponse response = ivy.response as IHttpResponse;",
+            "response.sendRedirect(dataDeletionTask.getStartLink().getAbsolute());"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 272, "y" : 64 }
+      }
+    }, {
+      "id" : "f3",
+      "type" : "RequestStart",
+      "name" : "cleanData",
+      "config" : {
+        "signature" : "cleanData"
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 176 }
+      },
+      "connect" : [
+        { "id" : "f5", "to" : "f4" }
+      ]
+    }, {
+      "id" : "f4",
+      "type" : "Script",
+      "name" : "Clean up data",
+      "config" : {
+        "output" : {
+          "code" : [
+            "import com.axonivy.utils.gdpr.persistence.entities.FinancialDataDeletion;",
+            "import com.axonivy.utils.gdpr.persistence.service.FinancialDataDeletionService;",
+            "import ch.ivyteam.ivy.request.IHttpResponse;",
+            "import ch.ivyteam.ivy.workflow.TaskState;",
+            "import ch.ivyteam.ivy.workflow.query.TaskQuery;",
+            "import ch.ivyteam.ivy.workflow.ITask;",
+            "ivy.wf.cleanup();",
+            "for (FinancialDataDeletion fin : FinancialDataDeletionService.getInstance().findAllProcessedFinancialYears()) {",
+            "  ivy.repo.delete(fin);",
+            "}"
+          ]
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 272, "y" : 176 }
+      }
+    }, {
+      "id" : "f6",
+      "type" : "RequestStart",
+      "name" : "login",
+      "config" : {
+        "signature" : "login",
+        "input" : {
+          "params" : [
+            { "name" : "username", "type" : "String", "desc" : "" },
+            { "name" : "password", "type" : "String", "desc" : "" }
+          ],
+          "map" : {
+            "out.password" : "param.password",
+            "out.username" : "param.username"
+          }
+        }
+      },
+      "visual" : {
+        "at" : { "x" : 96, "y" : 304 }
+      },
+      "connect" : [
+        { "id" : "f8", "to" : "f7" }
+      ]
+    }, {
+      "id" : "f7",
+      "type" : "Script",
+      "config" : {
+        "output" : {
+          "code" : "ivy.session.loginSessionUser(in.username, in.password);"
+        },
+        "sudo" : true
+      },
+      "visual" : {
+        "at" : { "x" : 272, "y" : 304 }
+      }
+    } ]
+}

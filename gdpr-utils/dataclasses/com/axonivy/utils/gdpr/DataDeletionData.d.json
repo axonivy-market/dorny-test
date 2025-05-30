@@ -1,0 +1,14 @@
+{
+  "$schema" : "https://json-schema.axonivy.com/data-class/12.0.0/data-class.json",
+  "simpleName" : "DataDeletionData",
+  "namespace" : "com.axonivy.utils.gdpr",
+  "isBusinessCaseData" : false,
+  "fields" : [ {
+    "name" : "task",
+    "type" : "com.axonivy.utils.gdpr.model.Task"
+  }, {
+    "name" : "financialDataDeletionId",
+    "type" : "String",
+    "modifiers" : [ "PERSISTENT" ]
+  } ]
+}

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://json-schema.axonivy.com/app/12.0.0/variables.json
+Variables:
+  gdpr:
+    # Cronjob pattern for executing once a year on 31. March and creates the Data Deletion task.
+    # Supported formats in variable values are:
+    # - Number - Duration in seconds.
+    #   Example: 10
+    # - Duration - Duration given in ISO 8601 format.
+    #   Examples: 10S, PT10M30S
+    # - Time - Daily at the given time.
+    #   Examples: 10:15, 23:45:30
+    # - CRON expression - Whenever the CRON expression matches.
+    #   Example: 15 10 * * MON
+    DataDeletionCronJobPattern: 0 0 31 3 *
+    # The initial year that the first record was inserted in the database.
+    # The format must be only year, e.g: 2020
+    InitialFinancialYear: ""
+    # The date that financial year is started.
+    # The format must follow the dd/MM, e.g: 31/01
+    StartDateFinancialYear: ""
+    # The number that defines at least after that number of years from now then financial years can be selected.
+    # It should be a number, e.g: 2
+    MinRangeAfterEndOfFinancialYear: ""
+    # The maximum of financial years can be show in the data deletion task.
+    # It should be a number, e.g: 5
+    MaxTotalFinancialYearCanBeSelected: ""
+    # The case custom fields need to be selected for processing, each custom field must include a name and type. We can define multiple datasets.
+    # Valid format should be: [{"name" : "MyKey", "type" : "String", "value" : "MyValue"}]
+    # [file: json]
+    CustomFieldsInScope: ""
+    EntityCustomField:
+      # The case custom field name that used to save the database entity id.
+      # Example: entityId
+      Name: ""
+      # The case custom field type that used to save the database entity id
+      # [enum: STRING, NUMBER]
+      Type: ""
+    # The Persistence Unit Name that your application used to define a set of database configurations. It is specified in the persistence.xml file.
+    # Example: local
+    PersistenceUnitName: ""
