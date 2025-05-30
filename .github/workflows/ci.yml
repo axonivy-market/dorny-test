@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    uses: axonivy-market/github-workflows/.github/workflows/ci.yml@v6
+
   build-test:
       runs-on: ubuntu-latest
       steps:
@@ -19,5 +22,3 @@ jobs:
           with:
             name: test-results
             path: jest-junit.xml
-  build:
-    uses: axonivy-market/github-workflows/.github/workflows/ci.yml@v6
