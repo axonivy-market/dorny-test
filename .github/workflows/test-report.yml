@@ -1,20 +1,48 @@
 name: 'Test Report'
+# on:
+#   workflow_run:
+#     workflows: ['BuildTest']                     # runs after CI workflow
+#     types:
+#       - completed
+# permissions:
+#   contents: read
+#   actions: read
+#   checks: write
+# jobs:
+#   report:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: dorny/test-reporter@v2
+#       with:
+#         artifact: test-results            # artifact name
+#         name: JEST Tests                  # Name of the check run which will be created
+#         path: '*.xml'                     # Path to test results (inside artifact .zip)
+#         reporter: jest-junit              # Format of test results
 on:
   workflow_run:
-    workflows: ['BuildTest']                     # runs after CI workflow
+    workflows: ["Run Tests"]
     types:
       - completed
-permissions:
-  contents: read
-  actions: read
-  checks: write
+
 jobs:
   report:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
+
     steps:
-    - uses: dorny/test-reporter@v2
-      with:
-        artifact: test-results            # artifact name
-        name: JEST Tests                  # Name of the check run which will be created
-        path: '*.xml'                     # Path to test results (inside artifact .zip)
-        reporter: jest-junit              # Format of test results
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Report test results
+        uses: dorny/test-reporter@v1
+        with:
+          name: Unit Tests
+          path: test-results/results.xml
+          reporter: jest-junit  # Replace with the reporter you use
