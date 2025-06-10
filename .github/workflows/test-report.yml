@@ -1,7 +1,7 @@
 name: 'Test Report'
 on:
   workflow_run:
-    workflows: ['CI-Build']                     # runs after CI workflow
+    workflows: ['BuildTest']                     # runs after CI workflow
     types:
       - completed
 permissions:
